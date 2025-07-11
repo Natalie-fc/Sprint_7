@@ -11,6 +11,7 @@ import org.junit.Test;
 import ru.practicum.model.Courier;
 import ru.practicum.steps.CourierSteps;
 
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
@@ -34,7 +35,7 @@ public class CourierTests extends BaseTest {
 
         courierSteps
                 .createCourier(courier)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("ok", is(true));
     }
 
@@ -43,10 +44,10 @@ public class CourierTests extends BaseTest {
 
         courierSteps
                 .createCourier(courier)
-                .statusCode(201);
+                .statusCode(SC_CREATED);
         courierSteps
                 .createCourier(courier)
-                .statusCode(409)
+                .statusCode(SC_CONFLICT)
                 .body("message", containsString("Этот логин уже используется"));
     }
 
@@ -55,7 +56,7 @@ public class CourierTests extends BaseTest {
         Courier courierWithoutLogin = Courier.withoutLogin();
 
         courierSteps.createCourier(courierWithoutLogin)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", containsString("Недостаточно данных для создания учетной записи"));
     }
 
@@ -64,7 +65,7 @@ public class CourierTests extends BaseTest {
         Courier courierWithoutPassword = Courier.withoutPassword();
 
         courierSteps.createCourier(courierWithoutPassword)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", containsString("Недостаточно данных для создания учетной записи"));
     }
 
@@ -72,7 +73,7 @@ public class CourierTests extends BaseTest {
     public void tearDown() {
         ValidatableResponse loginResponse = courierSteps.loginCourier(courier);
 
-        if (loginResponse.extract().statusCode() == 200) {
+        if (loginResponse.extract().statusCode() == SC_OK) {
             Integer id = loginResponse.extract().path("id");
 
             courier.setId(id);
