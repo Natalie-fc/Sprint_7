@@ -26,12 +26,12 @@ public class LoginCourierTests extends BaseTest {
         courier.setLogin(RandomStringUtils.randomAlphabetic(11));
         courier.setPassword(RandomStringUtils.randomAlphabetic(12));
         courier.setFirstName(RandomStringUtils.randomAlphabetic(10));
+        courierSteps.createCourier(courier);
     }
 
     @Test
     public void shouldLoginCourierTest() {
 
-        courierSteps.createCourier(courier);
         courierSteps.loginCourier(courier)
                 .statusCode(200)
                 .body("id", notNullValue());
@@ -39,34 +39,40 @@ public class LoginCourierTests extends BaseTest {
 
     @Test
     public void shouldNotLoginWithWrongPassword() {
-        courierSteps.createCourier(courier);
-        courier.setPassword("wrong");
-        courierSteps.loginCourier(courier)
+        Courier wrongPasswordCourier = new Courier();
+        wrongPasswordCourier.setLogin(courier.getLogin());
+        wrongPasswordCourier.setPassword("wrong");
+        courierSteps.loginCourier(wrongPasswordCourier)
                 .statusCode(404)
                 .body("message", containsString("Учетная запись не найдена"));
     }
 
     @Test
     public void shouldNotLoginWithoutLogin() {
-        courier.setLogin("");
-        courierSteps.loginCourier(courier)
+        Courier noLoginCourier = new Courier();
+        noLoginCourier.setLogin("");
+        noLoginCourier.setPassword("applebanana");
+        courierSteps.loginCourier(noLoginCourier)
                 .statusCode(400)
                 .body("message", containsString("Недостаточно данных для входа"));
     }
 
     @Test
     public void shouldNotLoginWithoutPassword() {
-        courier.setPassword("");
-        courierSteps.loginCourier(courier)
+        Courier noPasswordCourier = new Courier();
+        noPasswordCourier.setLogin("natalieee");
+        noPasswordCourier.setPassword("");
+        courierSteps.loginCourier(noPasswordCourier)
                 .statusCode(400)
                 .body("message", containsString("Недостаточно данных для входа"));
     }
 
     @Test
     public void shouldNotLoginNonExistentCourier() {
-        courier.setLogin("natalieee" + RandomStringUtils.randomAlphabetic(5));
-        courier.setPassword("something");
-        courierSteps.loginCourier(courier)
+        Courier nonExistentCourier = new Courier();
+        nonExistentCourier.setLogin("natalieee" + RandomStringUtils.randomAlphabetic(5));
+        nonExistentCourier.setPassword("something");
+        courierSteps.loginCourier(nonExistentCourier)
                 .statusCode(404)
                 .body("message", containsString("Учетная запись не найдена"));
     }
