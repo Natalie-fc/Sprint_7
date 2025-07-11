@@ -8,6 +8,7 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import org.junit.Before;
 import org.junit.Test;
 import ru.practicum.steps.OrderSteps;
+import static org.apache.http.HttpStatus.*;
 
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -27,7 +28,7 @@ public class OrderListTest extends BaseTest {
     @Description("Проверяет, что при GET-запросе возвращается список заказов в теле ответа")
     public void shouldReturnListOfOrders() {
         orderSteps.getOrderList()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("orders", notNullValue());
     }
 }
