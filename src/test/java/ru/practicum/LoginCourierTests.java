@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.practicum.model.Courier;
 import ru.practicum.steps.CourierSteps;
+import static org.apache.http.HttpStatus.*;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
@@ -33,7 +34,7 @@ public class LoginCourierTests extends BaseTest {
     public void shouldLoginCourierTest() {
 
         courierSteps.loginCourier(courier)
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue());
     }
 
@@ -43,7 +44,7 @@ public class LoginCourierTests extends BaseTest {
         wrongPasswordCourier.setLogin(courier.getLogin());
         wrongPasswordCourier.setPassword("wrong");
         courierSteps.loginCourier(wrongPasswordCourier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", containsString("Учетная запись не найдена"));
     }
 
@@ -53,7 +54,7 @@ public class LoginCourierTests extends BaseTest {
         noLoginCourier.setLogin("");
         noLoginCourier.setPassword("applebanana");
         courierSteps.loginCourier(noLoginCourier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", containsString("Недостаточно данных для входа"));
     }
 
@@ -63,7 +64,7 @@ public class LoginCourierTests extends BaseTest {
         noPasswordCourier.setLogin("natalieee");
         noPasswordCourier.setPassword("");
         courierSteps.loginCourier(noPasswordCourier)
-                .statusCode(400)
+                .statusCode(SC_BAD_REQUEST)
                 .body("message", containsString("Недостаточно данных для входа"));
     }
 
@@ -73,14 +74,14 @@ public class LoginCourierTests extends BaseTest {
         nonExistentCourier.setLogin("natalieee" + RandomStringUtils.randomAlphabetic(5));
         nonExistentCourier.setPassword("something");
         courierSteps.loginCourier(nonExistentCourier)
-                .statusCode(404)
+                .statusCode(SC_NOT_FOUND)
                 .body("message", containsString("Учетная запись не найдена"));
     }
 
     @After
     public void tearDown() {
         ValidatableResponse loginResponse = courierSteps.loginCourier(courier);
-        if (loginResponse.extract().statusCode() == 200) {
+        if (loginResponse.extract().statusCode() == SC_OK) {
             Integer id = loginResponse.extract().path("id");
             courier.setId(id);
 
