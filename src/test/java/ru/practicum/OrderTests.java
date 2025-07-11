@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ru.practicum.model.Order;
 import ru.practicum.steps.OrderSteps;
+import static org.apache.http.HttpStatus.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +56,7 @@ public class OrderTests extends BaseTest {
         ValidatableResponse response =
         orderSteps
                 .createOrder(order)
-                .statusCode(201)
+                .statusCode(SC_CREATED)
                 .body("track", notNullValue());
         track = response.extract().path("track");
     }
